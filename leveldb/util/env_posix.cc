@@ -396,6 +396,10 @@ class PosixWritableFile final : public WritableFile {
   // The path argument is only used to populate the description string in the
   // returned Status if an error occurs.
   static Status SyncFd(int fd, const std::string& fd_path) {
+	  // NobLSM:: We Implment NobLSM through check_commit system call
+
+	  check_commit(fd);
+	  /*
 #if HAVE_FULLFSYNC
     // On macOS and iOS, fsync() doesn't guarantee durability past power
     // failures. fcntl(F_FULLFSYNC) is required for that purpose. Some
@@ -419,6 +423,7 @@ class PosixWritableFile final : public WritableFile {
       return Status::OK();
     }
     return PosixError(fd_path, errno);
+	*/
   }
 
   // Returns the directory name in a path pointing to a file.
