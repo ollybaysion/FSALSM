@@ -8,16 +8,31 @@
 kernel.org 에서 원하는 버전의 커널 소스코드 다운로드
 
 # 2. 커널 빌드
+
+### (1) make-kpkg
 sudo make-kpkg -j8 --initrd --revsion=0.0 kernel_image
 
 -j8 : j 뒤에 붙는 숫자는 몇 개의 코어를 사용할 것인지 의미
 --initrd : init ram disk
---revsion = 0.0 : 본인의 기준에 맞추어서 버전을 설정
+--revsion = 0.0 : 본인의 기준에 맞추어서 버전을 설정지
 
-상위 디렉토리에 image가 생성
+makepkg 명령어는 패키지를 만드는 명렁어\
+make-kpkg는 커널 패키지를 만드는 명령어
+
+즉, make-kpkg명령어는 커널을 패키지로 빌드하여 배포 가능한 형태로 만드는 명령어이다. 커널을 구동하는데 필요한 복잡한 과정들을 패키지 형태로 관리해주는 도구이다. 만들어진 패키지는 dpkg 명령어를 통해 설치할 수 있다.
+
+상위 디렉토리에 패키지가 생성
+
+### (2) make bzImage
+sudo make -j8 bzImage
+cp arch/x86/boot/bzImage /boot/vmlinuz-{버전}
+
+make-kpkg는 매우 느리다. 매번 패키지 형태로 커널을 빌드하는 것은 생산성 측면에서 굉장히 손해보는 방식이다. 버그 하나 잡고 그것을 확인하기 위해 매번 1시간을 소모할 필요는 없다. make bzImage는 커널 이미지를 압축된 형태로 만들어준다. 상대적으로 시간이 적게 걸리기 때문에 간단한 변경의 경우에는 make bzImage를 쓰는 것이 더 좋다.
+
+만들어진 bzImage를 부트 디렉토리에 복사해주어야 한다.
 
 # 3. 커널 설치
-sudo dpkg -i {만든 이미지}
+sudo dpkg -i {만든 패키지}
 
 # 4. 재부팅
 reboot
