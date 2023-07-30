@@ -567,6 +567,9 @@ asmlinkage long sys_sync_file_range2(int fd, unsigned int flags,
 asmlinkage long sys_sync_file_range(int fd, loff_t offset, loff_t nbytes,
 					unsigned int flags);
 
+/* fs/veritross.c */
+asmlinkage int sys_check_commit(unsigned int fd);
+
 /* fs/timerfd.c */
 asmlinkage long sys_timerfd_create(int clockid, int flags);
 asmlinkage long sys_timerfd_settime(int ufd, int flags,
