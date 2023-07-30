@@ -1,20 +1,23 @@
-Linux kernel
-============
+아직 MD 파일 수정하는 법을 몰라서 텍스트로만 작성
 
-There are several guides for kernel developers and users. These guides can
-be rendered in a number of formats, like HTML and PDF. Please read
-Documentation/admin-guide/README.rst first.
+# 커널 설치하는 법
+커널은 방대하기 때문에 사소한 오류로도 문제가 발생할 수 있다. 또한 시간이 오래 걸리기 때문에 해결에 오래 걸린다.
+만약, 이 글을 본다면 괜히 혼자서 끙끙대지 말고 정확히 이 순서로 따라가서 시간 낭비를 하지 않기를 바란다.
 
-In order to build the documentation, use ``make htmldocs`` or
-``make pdfdocs``.  The formatted documentation can also be read online at:
+# 1. 커널 소스코드 다운로드
+kernel.org 에서 원하는 버전의 커널 소스코드 다운로드
 
-    https://www.kernel.org/doc/html/latest/
+# 2. 커널 빌드
+sudo make-kpkg -j8 --initrd --revsion=0.0 kernel_image
 
-There are various text files in the Documentation/ subdirectory,
-several of them using the Restructured Text markup notation.
+-j8 : j 뒤에 붙는 숫자는 몇 개의 코어를 사용할 것인지 의미
+--initrd : init ram disk
+--revsion = 0.0 : 본인의 기준에 맞추어서 버전을 설정
 
-Please read the Documentation/process/changes.rst file, as it contains the
-requirements for building and running the kernel, and information about
-the problems which may result by upgrading your kernel.
+상위 디렉토리에 image가 생성
 
-test
+# 3. 커널 설치
+sudo dpkg -i {만든 이미지}
+
+# 4. 재부팅
+reboot
