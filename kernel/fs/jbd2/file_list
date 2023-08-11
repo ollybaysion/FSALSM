@@ -1,6 +1,0 @@
-./revoke.c
-./transaction.c
-./journal.c
-./checkpoint.c
-./commit.c
-./recovery.c

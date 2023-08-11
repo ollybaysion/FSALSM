@@ -2,6 +2,8 @@
 #include <linux/kernel.h>
 #include <linux/fs.h>
 
+#include "ext4_jbd2.h"
+
 /*
    - fs/sync.c
 	sys_fsync
@@ -46,6 +48,8 @@ int add_pending_table(struct file *file)
 {
 	struct inode *inode = file->f_mapping->host;	
 	ext4_dirty_inode(inode, 0);
+
+	printk("[check_commit] : Success!\n");
 
 	return 0;
 }
