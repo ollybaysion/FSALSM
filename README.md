@@ -22,3 +22,4 @@ https://chenju2k6.github.io/blog/2018/11/leveldb
 https://hyeyoo.com/163
 https://revdev.tistory.com/55
 https://www.kernel.org/doc/Documentation/filesystems/vfs.txt
+https://kkikyul.tistory.com/90
