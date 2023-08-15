@@ -1151,13 +1151,16 @@ int ext4_fc_commit(journal_t *journal, tid_t commit_tid)
 
 	trace_ext4_fc_commit_start(sb);
 
+	printk("[ext4_fc_commit] 1\n");
 	start_time = ktime_get();
 
 	if (!test_opt2(sb, JOURNAL_FAST_COMMIT))
 		return jbd2_complete_transaction(journal, commit_tid);
 
+	printk("[ext4_fc_commit] 2\n");
 restart_fc:
 	ret = jbd2_fc_begin_commit(journal, commit_tid);
+	printk("[ext4_fc_commit] 3\n");
 	if (ret == -EALREADY) {
 		/* There was an ongoing commit, check if we need to restart */
 		if (atomic_read(&sbi->s_fc_subtid) <= subtid &&
@@ -1185,6 +1188,8 @@ restart_fc:
 
 	fc_bufs_before = (sbi->s_fc_bytes + bsize - 1) / bsize;
 	ret = ext4_fc_perform_commit(journal);
+	
+	printk("[ext4_fc_commit] 4\n");
 	if (ret < 0) {
 		status = EXT4_FC_STATUS_FAILED;
 		goto fallback;
