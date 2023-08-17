@@ -1302,8 +1302,9 @@ static struct inode *ext4_alloc_inode(struct super_block *sb)
 	ei->i_es_shk_nr = 0;
 	ei->i_es_shrink_lblk = 0;
 	ei->i_reserved_data_blocks = 0;
+
 	/* veritross */
-	ei->i_sst = 0;
+	ei->i_sstable = 0;
 
 	spin_lock_init(&(ei->i_block_reservation_lock));
 	ext4_init_pending_tree(&ei->i_pending_tree);
@@ -4025,7 +4026,7 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
 #ifdef CONFIG_EXT4_FS_POSIX_ACL
 	set_opt(sb, POSIX_ACL);
 #endif
-	if (ext4_has_feature_fast_commit(sb))
+	if(ext4_has_feature_fast_commit(sb))
 		set_opt2(sb, JOURNAL_FAST_COMMIT);
 	/* don't forget to enable journal_csum when metadata_csum is enabled. */
 	if (ext4_has_metadata_csum(sb))
@@ -4627,6 +4628,14 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
 	INIT_LIST_HEAD(&sbi->s_orphan); /* unlinked but open files */
 	mutex_init(&sbi->s_orphan_lock);
 
+	/* veritross */
+	sbi->head = kmalloc(32, GFP_KERNEL);
+	sbi->tail = kmalloc(32, GFP_KERNEL);
+	sbi->head->next = sbi->tail;
+	sbi->head->prev = sbi->tail;
+	sbi->tail->next = sbi->head;
+	sbi->tail->prev = sbi->head;
+	
 	/* Initialize fast commit stuff */
 	atomic_set(&sbi->s_fc_subtid, 0);
 	INIT_LIST_HEAD(&sbi->s_fc_q[FC_Q_MAIN]);

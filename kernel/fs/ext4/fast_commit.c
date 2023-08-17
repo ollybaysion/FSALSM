@@ -906,6 +906,21 @@ static int ext4_fc_write_inode_data(struct inode *inode, u32 *crc)
 	return 0;
 }
 
+void list_add_head_ct(struct inode *data)
+{
+	struct super_block *sb = data->i_sb;
+	struct ext4_sb_info *sbi = EXT4_SB(sb);
+	struct ct_node *newNode = kmalloc(32, GFP_KERNEL);
+	struct ct_node *head = sbi->head;
+
+	newNode->vfs_inode = data;
+	newNode->next = head->next;
+	newNode->prev = head;
+	head->next->prev = newNode;
+	head->next = newNode;
+
+	printk("[list_add_head_ct] Add Success\n");
+}
 
 /* Submit data for all the fast commit inodes */
 static int ext4_fc_submit_inode_data_all(journal_t *journal)
@@ -932,6 +947,9 @@ static int ext4_fc_submit_inode_data_all(journal_t *journal)
 		}
 		spin_unlock(&sbi->s_fc_lock);
 		ret = jbd2_submit_inode_data(ei->jinode);
+		if(ei->i_sstable == 1) {
+			list_add_head_ct(&ei->vfs_inode);
+		}
 		if (ret)
 			return ret;
 		spin_lock(&sbi->s_fc_lock);
@@ -1151,16 +1169,13 @@ int ext4_fc_commit(journal_t *journal, tid_t commit_tid)
 
 	trace_ext4_fc_commit_start(sb);
 
-	printk("[ext4_fc_commit] 1\n");
 	start_time = ktime_get();
 
 	if (!test_opt2(sb, JOURNAL_FAST_COMMIT))
 		return jbd2_complete_transaction(journal, commit_tid);
 
-	printk("[ext4_fc_commit] 2\n");
 restart_fc:
 	ret = jbd2_fc_begin_commit(journal, commit_tid);
-	printk("[ext4_fc_commit] 3\n");
 	if (ret == -EALREADY) {
 		/* There was an ongoing commit, check if we need to restart */
 		if (atomic_read(&sbi->s_fc_subtid) <= subtid &&
@@ -1189,7 +1204,6 @@ restart_fc:
 	fc_bufs_before = (sbi->s_fc_bytes + bsize - 1) / bsize;
 	ret = ext4_fc_perform_commit(journal);
 	
-	printk("[ext4_fc_commit] 4\n");
 	if (ret < 0) {
 		status = EXT4_FC_STATUS_FAILED;
 		goto fallback;

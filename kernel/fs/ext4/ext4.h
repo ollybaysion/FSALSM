@@ -1005,6 +1005,11 @@ enum {
 };
 
 
+struct ct_node {
+	struct inode *vfs_inode;
+
+	struct ct_node *next, *prev;
+};
 /*
  * fourth extended file system inode data in memory
  */
@@ -1051,6 +1056,9 @@ struct ext4_inode_info {
 					 * inodes that need fast commit
 					 * protected by sbi->s_fc_lock.
 					 */
+
+	/* veritross */
+	unsigned int i_sstable;
 
 	/* Start of lblk range that needs to be committed in this fast commit */
 	ext4_lblk_t i_fc_lblk_start;
@@ -1719,6 +1727,10 @@ struct ext4_sb_info {
 	 * the on-disk superblock, we queue this work to do it.
 	 */
 	struct work_struct s_error_work;
+
+	/* veritross */
+	struct list_head s_c_q;  /* committed table */
+	struct ct_node *head, *tail;
 
 	/* Ext4 fast commit sub transaction ID */
 	atomic_t s_fc_subtid;
