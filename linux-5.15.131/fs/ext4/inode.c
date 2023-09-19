@@ -5753,6 +5753,11 @@ int ext4_mark_iloc_dirty(handle_t *handle,
 	    !(EXT4_I(inode)->i_flags & EXT4_EA_INODE_FL))
 		inode_inc_iversion(inode);
 
+	/* veritross */
+	if(inode) {
+		// printk("[veritross] This is SSTable\n");
+		// list_add(&EXT4_I(inode)->jinode->i_sstable, &handle->h_transaction->t_sstable_list);
+	}
 	/* the do_update_inode consumes one bh->b_count */
 	get_bh(iloc->bh);
 
@@ -5986,7 +5991,15 @@ out:
 void ext4_dirty_inode(struct inode *inode, int flags)
 {
 	handle_t *handle;
+	unsigned int f;
 
+	/*
+	if(inode) {
+		f = EXT4_I(inode)->i_sstable;
+	}
+	if(f)
+		printk("[veritross] sstable : %d\n", f);
+		*/
 	handle = ext4_journal_start(inode, EXT4_HT_INODE, 2);
 	if (IS_ERR(handle))
 		return;

@@ -847,7 +847,7 @@ Status DBImpl::FinishCompactionOutputFile(CompactionState* compact,
 
   // Finish and check for file errors
   if (s.ok()) {
-	    s = compact->outfile->Sync();
+    s = compact->outfile->Sync();
   }
   if (s.ok()) {
     s = compact->outfile->Close();
@@ -862,10 +862,6 @@ Status DBImpl::FinishCompactionOutputFile(CompactionState* compact,
     s = iter->status();
     delete iter;
     if (s.ok()) {
-      printf("Generated table #%llu@%d: %lld keys, %lld bytes\n",
-          (unsigned long long)output_number, compact->compaction->level(),
-          (unsigned long long)current_entries,
-          (unsigned long long)current_bytes);
       Log(options_.info_log, "Generated table #%llu@%d: %lld keys, %lld bytes",
           (unsigned long long)output_number, compact->compaction->level(),
           (unsigned long long)current_entries,
@@ -897,10 +893,6 @@ Status DBImpl::DoCompactionWork(CompactionState* compact) {
   const uint64_t start_micros = env_->NowMicros();
   int64_t imm_micros = 0;  // Micros spent doing imm_ compactions
 
-  printf("Compacting %d@%d + %d@%d files\n",
-      compact->compaction->num_input_files(0), compact->compaction->level(),
-      compact->compaction->num_input_files(1),
-      compact->compaction->level() + 1);
   Log(options_.info_log, "Compacting %d@%d + %d@%d files",
       compact->compaction->num_input_files(0), compact->compaction->level(),
       compact->compaction->num_input_files(1),

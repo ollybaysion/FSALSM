@@ -426,6 +426,9 @@ struct jbd2_inode {
 	 */
 	struct list_head i_list;
 
+	/* veritross */
+	struct list_head i_sstable;
+
 	/**
 	 * @i_vfs_inode:
 	 *
@@ -642,6 +645,9 @@ struct transaction_s
 	 * [j_list_lock]
 	 */
 	struct list_head	t_inode_list;
+
+	/* veritross */
+	struct list_head t_sstable_list;
 
 	/*
 	 * Protects info related to handles

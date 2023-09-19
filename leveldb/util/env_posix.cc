@@ -40,7 +40,6 @@ namespace leveldb {
 
 namespace {
 
-int cnt_fsync = 0;
 // Set by EnvPosixTestHelper::SetReadOnlyMMapLimit() and MaxOpenFiles().
 int g_open_read_only_file_limit = -1;
 
@@ -396,10 +395,6 @@ class PosixWritableFile final : public WritableFile {
   // The path argument is only used to populate the description string in the
   // returned Status if an error occurs.
   static Status SyncFd(int fd, const std::string& fd_path) {
-	  // NobLSM:: We Implment NobLSM through check_commit system call
-
-	  check_commit(fd);
-	  /*
 #if HAVE_FULLFSYNC
     // On macOS and iOS, fsync() doesn't guarantee durability past power
     // failures. fcntl(F_FULLFSYNC) is required for that purpose. Some
@@ -412,9 +407,6 @@ class PosixWritableFile final : public WritableFile {
 
 #if HAVE_FDATASYNC
     bool sync_success = ::fdatasync(fd) == 0;
-	// bool sync_success = true;
-	// cnt_fsync++;
-	// printf("fsync : %d\n", cnt_fsync);
 #else
     bool sync_success = ::fsync(fd) == 0;
 #endif  // HAVE_FDATASYNC
@@ -423,7 +415,6 @@ class PosixWritableFile final : public WritableFile {
       return Status::OK();
     }
     return PosixError(fd_path, errno);
-	*/
   }
 
   // Returns the directory name in a path pointing to a file.

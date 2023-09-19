@@ -74,7 +74,7 @@ static int FLAGS_reads = -1;
 static int FLAGS_threads = 1;
 
 // Size of each value
-static int FLAGS_value_size = 128;
+static int FLAGS_value_size = 100;
 
 // Arrange to generate values that shrink to this fraction of
 // their original size after compression
@@ -125,6 +125,9 @@ static bool FLAGS_compression = true;
 
 // Use the db with the following name.
 static const char* FLAGS_db = nullptr;
+
+// ZSTD compression level to try out
+static int FLAGS_zstd_compression_level = 1;
 
 namespace leveldb {
 
@@ -779,11 +782,21 @@ class Benchmark {
   }
 
   void ZstdCompress(ThreadState* thread) {
-    Compress(thread, "zstd", &port::Zstd_Compress);
+    Compress(thread, "zstd",
+             [](const char* input, size_t length, std::string* output) {
+               return port::Zstd_Compress(FLAGS_zstd_compression_level, input,
+                                          length, output);
+             });
   }
 
   void ZstdUncompress(ThreadState* thread) {
-    Uncompress(thread, "zstd", &port::Zstd_Compress, &port::Zstd_Uncompress);
+    Uncompress(
+        thread, "zstd",
+        [](const char* input, size_t length, std::string* output) {
+          return port::Zstd_Compress(FLAGS_zstd_compression_level, input,
+                                     length, output);
+        },
+        &port::Zstd_Uncompress);
   }
 
   void Open() {
@@ -839,7 +852,6 @@ class Benchmark {
       for (int j = 0; j < entries_per_batch_; j++) {
         const int k = seq ? i + j : thread->rand.Uniform(FLAGS_num);
         key.Set(k);
-		// printf("key : %d / %s\n", k, key.slice().ToString().c_str());
         batch.Put(key.slice(), gen.Generate(value_size_));
         bytes += value_size_ + key.slice().size();
         thread->stats.FinishedSingleOp();

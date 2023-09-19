@@ -116,6 +116,8 @@ static void jbd2_get_transaction(journal_t *journal,
 	atomic_set(&transaction->t_handle_count, 0);
 	INIT_LIST_HEAD(&transaction->t_inode_list);
 	INIT_LIST_HEAD(&transaction->t_private_list);
+	/* veritross */
+	INIT_LIST_HEAD(&transaction->t_sstable_list);
 
 	/* Set up the commit timer for the new transaction. */
 	journal->j_commit_timer.expires = round_jiffies_up(transaction->t_expires);
