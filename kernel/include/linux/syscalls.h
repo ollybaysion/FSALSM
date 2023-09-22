@@ -1165,6 +1165,10 @@ asmlinkage long sys_sysfs(int option,
 				unsigned long arg1, unsigned long arg2);
 asmlinkage long sys_fork(void);
 
+/* veritross */
+asmlinkage unsigned int sys_check_commit(unsigned int fd);
+asmlinkage unsigned int sys_is_committed(unsigned int fd);
+
 /* obsolete: kernel/time/time.c */
 asmlinkage long sys_stime(__kernel_old_time_t __user *tptr);
 asmlinkage long sys_stime32(old_time32_t __user *tptr);
