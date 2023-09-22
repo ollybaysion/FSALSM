@@ -1098,6 +1098,10 @@ struct ext4_inode_info {
 	struct inode vfs_inode;
 	struct jbd2_inode *jinode;
 
+	/* veritross */
+	unsigned int i_sstable;
+	unsigned int i_dirty;
+
 	spinlock_t i_raw_lock;	/* protects updates to the raw inode */
 
 	/*

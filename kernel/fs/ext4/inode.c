@@ -5745,6 +5745,10 @@ int ext4_mark_iloc_dirty(handle_t *handle,
 	}
 	ext4_fc_track_inode(handle, inode);
 
+	/* veritross */
+	if(EXT4_I(inode)->i_sstable == 1) {
+		printk("[veritross] ext4_mark_iloc_dirty: SSTable\n");
+	}
 	/*
 	 * ea_inodes are using i_version for storing reference count, don't
 	 * mess with it

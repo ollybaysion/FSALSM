@@ -1317,6 +1317,11 @@ static struct inode *ext4_alloc_inode(struct super_block *sb)
 	INIT_WORK(&ei->i_rsv_conversion_work, ext4_end_io_rsv_work);
 	ext4_fc_init_inode(&ei->vfs_inode);
 	mutex_init(&ei->i_fc_lock);
+
+	/* veritross */
+	ei->i_sstable = 0;
+	ei->i_dirty = 0;
+
 	return &ei->vfs_inode;
 }
 
