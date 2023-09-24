@@ -438,6 +438,9 @@ struct jbd2_inode {
 	 */
 	unsigned long i_flags;
 
+	/* veritross */
+	struct list_head i_dirty_list;
+
 	/**
 	 * @i_dirty_start:
 	 *
@@ -642,6 +645,9 @@ struct transaction_s
 	 * [j_list_lock]
 	 */
 	struct list_head	t_inode_list;
+
+	/* veritross */
+	struct list_head	t_sstable_list;
 
 	/*
 	 * Protects info related to handles
