@@ -1100,7 +1100,6 @@ struct ext4_inode_info {
 
 	/* veritross */
 	unsigned int i_sstable;
-	unsigned int i_dirty;
 
 	spinlock_t i_raw_lock;	/* protects updates to the raw inode */
 
@@ -1494,6 +1493,13 @@ struct ext4_orphan_info {
 						 * file blocks */
 };
 
+struct inode_head {
+	struct inode *inode;
+	unsigned long ino;
+	unsigned int tid;
+	struct inode_head *next, *prev;
+};
+
 /*
  * fourth extended-fs super-block data in memory
  */
@@ -1557,6 +1563,13 @@ struct ext4_sb_info {
 	u32 s_max_batch_time;
 	u32 s_min_batch_time;
 	struct block_device *s_journal_bdev;
+
+	/* veritross */
+	unsigned int s_callback_flag;
+	struct inode_head *s_pending_table;
+	struct inode_head *s_committed_table;
+	spinlock_t s_vt_lock;
+
 #ifdef CONFIG_QUOTA
 	/* Names of quota files with journalled quota */
 	char __rcu *s_qf_names[EXT4_MAXQUOTAS];

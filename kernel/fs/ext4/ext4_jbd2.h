@@ -211,6 +211,11 @@ ext4_mark_iloc_dirty(handle_t *handle,
 		     struct inode *inode,
 		     struct ext4_iloc *iloc);
 
+/* veritross */
+struct inode_head *vt_alloc_inode_head(void);
+void vt_add_pending(struct inode_head **list, struct inode *inode, handle_t *handle);
+void vt_move_entries(struct inode_head **committed_table, struct inode_head **pending_table);
+void vt_callback(struct super_block *sb, struct ext4_journal_cb_entry *jce, int rc);
 /*
  * On success, We end up with an outstanding reference count against
  * iloc->bh.  This _must_ be cleaned up later.

@@ -1141,6 +1141,7 @@ restart_loop:
 	stats.run.rs_logging = jbd2_time_diff(stats.run.rs_logging,
 					      commit_transaction->t_start);
 
+	printk("[veritross] Transaction %d Complete!\n", commit_transaction->t_tid);
 	/*
 	 * File the transaction statistics
 	 */

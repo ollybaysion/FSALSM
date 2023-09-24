@@ -1320,7 +1320,6 @@ static struct inode *ext4_alloc_inode(struct super_block *sb)
 
 	/* veritross */
 	ei->i_sstable = 0;
-	ei->i_dirty = 0;
 
 	return &ei->vfs_inode;
 }
@@ -4901,6 +4900,11 @@ no_journal:
 	if (sbi->s_journal)
 		sbi->s_journal->j_commit_callback =
 			ext4_journal_commit_callback;
+
+	/* veritross */
+	sbi->s_callback_flag = 0;
+	spin_lock_init(&sbi->s_vt_lock);
+	sbi->s_pending_table = sbi->s_committed_table = NULL;
 
 	block = ext4_count_free_clusters(sb);
 	ext4_free_blocks_count_set(sbi->s_es,
