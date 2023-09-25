@@ -5737,6 +5737,7 @@ int ext4_chunk_trans_blocks(struct inode *inode, int nrblocks)
 int ext4_mark_iloc_dirty(handle_t *handle,
 			 struct inode *inode, struct ext4_iloc *iloc)
 {
+	struct ext4_journal_cb_entry *jce;
 	int err = 0;
 
 	if (unlikely(ext4_forced_shutdown(EXT4_SB(inode->i_sb)))) {
@@ -5747,7 +5748,20 @@ int ext4_mark_iloc_dirty(handle_t *handle,
 
 	/* veritross */
 	if(EXT4_I(inode)->i_sstable == 1) {
-		list_add(&EXT4_I(inode)->jinode->i_dirty_list, &handle->h_transaction->t_sstable_list);
+		struct ext4_sb_info *sbi = EXT4_SB(inode->i_sb);
+		printk("[veritross] inode %ld into transaction %d\n", inode->i_ino, handle->h_transaction->t_tid);
+		
+		spin_lock(&sbi->s_vt_lock);
+		vt_add_pending(&sbi->s_pending_table, inode, handle);
+		spin_unlock(&sbi->s_vt_lock);
+		if(sbi->s_callback_flag == 0) {
+			printk("[veritross] callback add\n");
+			sbi->s_callback_flag = 1;
+			jce = kmalloc(sizeof(struct ext4_journal_cb_entry), GFP_KERNEL);
+			INIT_LIST_HEAD(&jce->jce_list);
+			jce->jce_func = vt_callback;
+			ext4_journal_callback_add(handle, vt_callback, jce);
+		}
 	}
 	/*
 	 * ea_inodes are using i_version for storing reference count, don't
