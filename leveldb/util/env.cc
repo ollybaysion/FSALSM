@@ -28,6 +28,7 @@ Status Env::DeleteDir(const std::string& dirname) { return RemoveDir(dirname); }
 Status Env::RemoveFile(const std::string& fname) { return DeleteFile(fname); }
 Status Env::DeleteFile(const std::string& fname) { return RemoveFile(fname); }
 
+bool Env::is_committed(const std::string& fname) { return false; }
 SequentialFile::~SequentialFile() = default;
 
 RandomAccessFile::~RandomAccessFile() = default;

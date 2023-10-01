@@ -168,6 +168,7 @@ class LogTest : public testing::Test {
       contents_.append(slice.data(), slice.size());
       return Status::OK();
     }
+  Status Check_Commit() override { return Status::OK(); }
 
     std::string contents_;
   };

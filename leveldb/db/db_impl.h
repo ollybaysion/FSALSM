@@ -7,6 +7,9 @@
 
 #include <atomic>
 #include <deque>
+#include <list>
+#include <utility>
+#include <map>
 #include <set>
 #include <string>
 
@@ -71,6 +74,12 @@ class DBImpl : public DB {
   // bytes.
   void RecordReadSample(Slice key);
 
+  struct Dependency {
+	  std::vector<uint64_t> inputs;
+	  std::vector<uint64_t> outputs;
+	int num_of_committed;
+  };
+
  private:
   friend class DB;
   struct CompactionState;
@@ -114,6 +123,8 @@ class DBImpl : public DB {
       EXCLUSIVE_LOCKS_REQUIRED(mutex_);
 
   void MaybeIgnoreError(Status* s) const;
+
+  void VerifyCommit();
 
   // Delete any unneeded files and stale in-memory entries.
   void RemoveObsoleteFiles() EXCLUSIVE_LOCKS_REQUIRED(mutex_);
@@ -191,6 +202,10 @@ class DBImpl : public DB {
   // Set of table files to protect from deletion because they are
   // part of ongoing compactions.
   std::set<uint64_t> pending_outputs_ GUARDED_BY(mutex_);
+
+  /* veritross */
+  std::deque<struct Dependency *> dependency_table GUARDED_BY(mutex_);
+  std::set<uint64_t> shadow_files GUARDED_BY(mutex_);
 
   // Has a background compaction been scheduled or is running?
   bool background_compaction_scheduled_ GUARDED_BY(mutex_);

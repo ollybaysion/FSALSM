@@ -350,6 +350,15 @@ class PosixWritableFile final : public WritableFile {
     return SyncFd(fd_, filename_);
   }
 
+  /* veritross */
+  Status Check_Commit() override {
+	  if(::syscall(449, fd_) == 0) {
+		  return Status::OK();
+	  }
+
+	  return PosixError(filename_, errno);
+  }
+
  private:
   Status FlushBuffer() {
     Status status = WriteUnbuffered(buf_, pos_);
@@ -620,6 +629,15 @@ class PosixEnv : public Env {
       return PosixError(filename, errno);
     }
     return Status::OK();
+  }
+
+  bool is_committed(const std::string& filename) override {
+	  int fd = ::open(filename.c_str(), O_RDONLY | kOpenBaseFlags);
+	  if(fd < 0)
+		  return false;
+	  ::close(fd);
+
+	  return ::syscall(450, fd);
   }
 
   Status CreateDir(const std::string& dirname) override {

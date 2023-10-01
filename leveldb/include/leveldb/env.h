@@ -129,6 +129,7 @@ class LEVELDB_EXPORT Env {
   // RemoveDir.
   virtual Status RemoveFile(const std::string& fname);
 
+  virtual bool is_committed(const std::string& fname);
   // DEPRECATED: Modern Env implementations should override RemoveFile instead.
   //
   // The default implementation calls RemoveFile, to support legacy Env user
@@ -287,6 +288,7 @@ class LEVELDB_EXPORT WritableFile {
   virtual Status Close() = 0;
   virtual Status Flush() = 0;
   virtual Status Sync() = 0;
+  virtual Status Check_Commit() = 0;
 };
 
 // An interface for writing log messages.
@@ -364,6 +366,9 @@ class LEVELDB_EXPORT EnvWrapper : public Env {
   }
   Status RemoveFile(const std::string& f) override {
     return target_->RemoveFile(f);
+  }
+  bool is_committed(const std::string& f) override {
+	  return false;
   }
   Status CreateDir(const std::string& d) override {
     return target_->CreateDir(d);

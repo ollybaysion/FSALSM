@@ -208,7 +208,7 @@ class WritableFileImpl : public WritableFile {
   Status Close() override { return Status::OK(); }
   Status Flush() override { return Status::OK(); }
   Status Sync() override { return Status::OK(); }
-
+  Status Check_Commit() override { return Status::OK(); }
  private:
   FileState* file_;
 };
