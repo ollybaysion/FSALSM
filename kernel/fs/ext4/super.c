@@ -436,7 +436,6 @@ static void ext4_journal_commit_callback(journal_t *journal, transaction_t *txn)
 	struct ext4_sb_info		*sbi = EXT4_SB(sb);
 	int				error = is_journal_aborted(journal);
 	struct ext4_journal_cb_entry	*jce;
-	struct jbd2_inode		*jinode;
 
 	BUG_ON(txn->t_state == T_FINISHED);
 
@@ -450,16 +449,6 @@ static void ext4_journal_commit_callback(journal_t *journal, transaction_t *txn)
 		spin_unlock(&sbi->s_md_lock);
 		jce->jce_func(sb, jce, error);
 		spin_lock(&sbi->s_md_lock);
-	}
-	/* veritross */
-	if(list_empty(&txn->t_sstable_list)) {
-		spin_unlock(&sbi->s_md_lock);
-		return;
-	}
-	list_for_each_entry(jinode, &txn->t_sstable_list, i_dirty_list) {
-		struct inode *inode = jinode->i_vfs_inode;
-		EXT4_I(inode)->i_dirty = 0;
-		list_del(&jinode->i_dirty_list);
 	}
 	spin_unlock(&sbi->s_md_lock);
 
@@ -1332,6 +1321,7 @@ static struct inode *ext4_alloc_inode(struct super_block *sb)
 
 	/* veritross */
 	ei->i_sstable = 0;
+	ei->i_dirty = 0;
 
 	return &ei->vfs_inode;
 }

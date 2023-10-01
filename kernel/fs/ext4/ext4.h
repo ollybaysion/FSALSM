@@ -1100,6 +1100,7 @@ struct ext4_inode_info {
 
 	/* veritross */
 	unsigned int i_sstable;
+	unsigned int i_dirty;
 
 	spinlock_t i_raw_lock;	/* protects updates to the raw inode */
 
@@ -3886,6 +3887,66 @@ static inline int ext4_buffer_uptodate(struct buffer_head *bh)
 	if (buffer_write_io_error(bh))
 		set_buffer_uptodate(bh);
 	return buffer_uptodate(bh);
+}
+
+static inline void
+__ilist_add(struct inode_head **list, struct inode_head *ih) 
+{
+	if(!*list) {
+		ih->next = ih->prev = ih;
+		*list = ih;
+	} else {
+		struct inode_head *first = *list, *last = first->prev;
+		ih->prev = last;
+		ih->next = first;
+		last->next = first->prev = ih;
+	}
+}
+
+static inline void
+__ilist_del(struct inode_head **list, struct inode_head *ih)
+{
+	if(*list == ih) {
+		*list = ih->next;
+		if(*list == ih)
+			*list = NULL;
+	}
+	ih->prev->next = ih->next;
+	ih->next->prev = ih->prev;
+}
+
+static inline void
+__ilist_move(struct inode_head **list1, struct inode_head **list2)
+{
+	if(*list1 == NULL) {
+		*list1 = *list2;
+	} else if (*list2 != NULL) {
+		struct inode_head *first1 = *list1, *last1 = first1->prev;
+		struct inode_head *first2 = *list2, *last2 = first2->prev;
+		first2->prev = last1;
+		last2->next = first1;
+		last1->next = first2;
+		first1->prev = last2;
+	}
+	*list2 = NULL;
+}
+
+static inline struct inode_head *
+__ilist_find(struct inode_head **list, unsigned long t_ino)
+{
+	if(*list) {
+		struct inode_head *first = *list, *cur = first;
+		while(1) {
+			printk("[veritross] cur : %ld, finding : %ld\n", cur->ino, t_ino);
+			if(cur->ino == t_ino) {
+				return cur;
+			}
+			if(cur->next == first)
+				break;
+			cur = cur->next;
+		}
+	}
+	return NULL;
 }
 
 #endif	/* __KERNEL__ */

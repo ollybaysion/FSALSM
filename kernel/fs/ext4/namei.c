@@ -3235,6 +3235,16 @@ int __ext4_unlink(struct inode *dir, const struct qstr *d_name,
 	handle_t *handle;
 	int skip_remove_dentry = 0;
 
+	/* veritross */
+	if(EXT4_I(inode)->i_sstable == 1) {
+		struct inode_head **ilist = &EXT4_SB(inode->i_sb)->s_committed_table;
+		struct inode_head *ih = __ilist_find(ilist, inode->i_ino);	
+		if(ih) {
+			printk("[veritross] Delete %ld from Committed List\n", inode->i_ino);
+			__ilist_del(ilist, ih);
+		}
+	}
+
 	/*
 	 * Keep this outside the transaction; it may have to set up the
 	 * directory's encryption key, which isn't GFP_NOFS-safe.

@@ -5738,6 +5738,7 @@ int ext4_mark_iloc_dirty(handle_t *handle,
 			 struct inode *inode, struct ext4_iloc *iloc)
 {
 	struct ext4_journal_cb_entry *jce;
+	struct ext4_sb_info *sbi = NULL;
 	int err = 0;
 
 	if (unlikely(ext4_forced_shutdown(EXT4_SB(inode->i_sb)))) {
@@ -5747,15 +5748,15 @@ int ext4_mark_iloc_dirty(handle_t *handle,
 	ext4_fc_track_inode(handle, inode);
 
 	/* veritross */
-	if(EXT4_I(inode)->i_sstable == 1) {
-		struct ext4_sb_info *sbi = EXT4_SB(inode->i_sb);
-		printk("[veritross] inode %ld into transaction %d\n", inode->i_ino, handle->h_transaction->t_tid);
+	if(EXT4_I(inode)->i_sstable == 1 && EXT4_I(inode)->i_dirty == 0) {
+		EXT4_I(inode)->i_dirty = 1;
+		sbi = EXT4_SB(inode->i_sb);
 		
 		spin_lock(&sbi->s_vt_lock);
 		vt_add_pending(&sbi->s_pending_table, inode, handle);
 		spin_unlock(&sbi->s_vt_lock);
+		printk("[veritross] inode %ld add pending table\n", inode->i_ino);
 		if(sbi->s_callback_flag == 0) {
-			printk("[veritross] callback add\n");
 			sbi->s_callback_flag = 1;
 			jce = kmalloc(sizeof(struct ext4_journal_cb_entry), GFP_KERNEL);
 			INIT_LIST_HEAD(&jce->jce_list);
