@@ -3240,8 +3240,8 @@ int __ext4_unlink(struct inode *dir, const struct qstr *d_name,
 		struct inode_head **ilist = &EXT4_SB(inode->i_sb)->s_committed_table;
 		struct inode_head *ih = __ilist_find(ilist, inode->i_ino);	
 		if(ih) {
-			printk("[veritross] Delete %ld from Committed List\n", inode->i_ino);
 			__ilist_del(ilist, ih);
+			kfree(ih);
 		}
 	}
 

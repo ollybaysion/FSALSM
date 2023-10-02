@@ -5751,11 +5751,11 @@ int ext4_mark_iloc_dirty(handle_t *handle,
 	if(EXT4_I(inode)->i_sstable == 1 && EXT4_I(inode)->i_dirty == 0) {
 		EXT4_I(inode)->i_dirty = 1;
 		sbi = EXT4_SB(inode->i_sb);
+		printk("[veritross] inode %ld into transaction %d\n", inode->i_ino, handle->h_transaction->t_tid);
 		
 		spin_lock(&sbi->s_vt_lock);
 		vt_add_pending(&sbi->s_pending_table, inode, handle);
 		spin_unlock(&sbi->s_vt_lock);
-		printk("[veritross] inode %ld add pending table\n", inode->i_ino);
 		if(sbi->s_callback_flag == 0) {
 			sbi->s_callback_flag = 1;
 			jce = kmalloc(sizeof(struct ext4_journal_cb_entry), GFP_KERNEL);

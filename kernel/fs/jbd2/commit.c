@@ -1141,7 +1141,6 @@ restart_loop:
 	stats.run.rs_logging = jbd2_time_diff(stats.run.rs_logging,
 					      commit_transaction->t_start);
 
-	printk("[veritross] Transaction %d Complete!\n", commit_transaction->t_tid);
 	/*
 	 * File the transaction statistics
 	 */
@@ -1158,6 +1157,7 @@ restart_loop:
 	journal->j_committing_transaction = NULL;
 	commit_time = ktime_to_ns(ktime_sub(ktime_get(), start_time));
 
+	printk("[veritross] transaction %d complete\n", commit_transaction->t_tid);
 	/*
 	 * weight the commit time higher than the average time so we don't
 	 * react too strongly to vast changes in the commit time

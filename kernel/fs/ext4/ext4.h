@@ -3937,7 +3937,6 @@ __ilist_find(struct inode_head **list, unsigned long t_ino)
 	if(*list) {
 		struct inode_head *first = *list, *cur = first;
 		while(1) {
-			printk("[veritross] cur : %ld, finding : %ld\n", cur->ino, t_ino);
 			if(cur->ino == t_ino) {
 				return cur;
 			}
