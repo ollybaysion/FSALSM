@@ -1,8 +1,4 @@
-# NobLSM
-NobLSM baseline 구현
+# FSLSM
+File System Aware LSM Tree (임시) 는 쓰기에 최적화된 Key-Value Store 기반의 데이터베이스입니다.
 
-# Kernel
-Kernel 설명
-
-# LevelDB
-LevelDB 설명
+TODO (item / contents / etc ...)
