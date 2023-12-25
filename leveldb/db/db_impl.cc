@@ -1175,6 +1175,7 @@ Status DBImpl::Get(const ReadOptions& options, const Slice& key,
 
 	bool have_stat_update = false;
 	Version::GetStats stats;
+	printf("GET %s From", key.ToString().c_str());
 
 	// Unlock while reading from files and memtables
 	{
@@ -1182,11 +1183,15 @@ Status DBImpl::Get(const ReadOptions& options, const Slice& key,
 		// First look in the memtable, then in the immutable memtable (if any).
 		LookupKey lkey(key, snapshot);
 		if (mem->Get(lkey, value, &s)) {
+			printf("Mem\n");
 			// Done
 		} else if (imm != nullptr && imm->Get(lkey, value, &s)) {
+			printf("IMM\n");
 			// Done
 		} else {
 			s = current->Get(options, lkey, value, &stats);
+			if(s.ok()) printf("Storage\n");
+			else printf("Failed\n");
 			have_stat_update = true;
 		}
 		mutex_.Lock();
