@@ -849,9 +849,6 @@ class Benchmark {
     KeyBuffer key;
     for (int i = 0; i < num_; i += entries_per_batch_) {
       batch.Clear();
-      if(i == 600000) {
-        abort();
-      }
       for (int j = 0; j < entries_per_batch_; j++) {
         const int k = seq ? i + j : thread->rand.Uniform(FLAGS_num);
         key.Set(k);
@@ -901,7 +898,7 @@ class Benchmark {
     KeyBuffer key;
     for (int i = 0; i < reads_; i++) {
       const int k = thread->rand.Uniform(FLAGS_num);
-      key.Set(i);
+      key.Set(k);
       if (db_->Get(options, key.slice(), &value).ok()) {
         found++;
       }
